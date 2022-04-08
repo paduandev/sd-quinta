@@ -39,7 +39,8 @@ public class Client {
 
             } while (!msg.equalsIgnoreCase("exit"));
 
-            listen.interrupt();
+            // listen.interrupt();
+            listen.parar();
             teclado.close();
 
         } catch (Exception e) {

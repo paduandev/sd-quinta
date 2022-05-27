@@ -19,62 +19,70 @@ import org.springframework.web.bind.annotation.RestController;
 import br.anhembi.spring01.model.User;
 import br.anhembi.spring01.repository.UserRepo;
 
-
-
-@RestController 
+@RestController
 @RequestMapping("/user")
 @CrossOrigin("*")
 public class UserController {
-    
+
     @Autowired // injeção de dependência
     private UserRepo repo;
 
     @PostMapping
     public ResponseEntity<User> insertUser(@RequestBody User user) {
         User newUser = repo.save(user);
-        
+
         return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
     }
-    
+
     @GetMapping
-    public ResponseEntity <List<User>> findAll() {
+    public ResponseEntity<List<User>> findAll() {
         List<User> listUser = (List<User>) repo.findAll();
 
         return ResponseEntity.ok(listUser);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity <User> findById(@PathVariable long id) {
-       User user =  repo.findById(id).orElse(null);
+    public ResponseEntity<User> findById(@PathVariable long id) {
+        User user = repo.findById(id).orElse(null);
 
-       if(user != null) {
-           return ResponseEntity.ok(user);  // status 200
-       }
+        if (user != null) {
+            return ResponseEntity.ok(user); // status 200
+        }
 
-       return ResponseEntity.notFound().build(); // status 404
+        return ResponseEntity.notFound().build(); // status 404
+    }
+
+    @GetMapping("/nome/{nome}")
+    public ResponseEntity<List<User>> findByName(@PathVariable String nome) {
+        List<User> listaUser = repo.findByNameLike(nome);
+
+        if (listaUser != null) {
+            return ResponseEntity.ok(listaUser); // status 200
+        }
+        return ResponseEntity.notFound().build(); // status 404
     }
 
     @PutMapping
-    public ResponseEntity <User> updateById(@RequestBody User user) {
-        User userFound =  repo.findById(user.getCode()).orElse(null);
- 
-        if(userFound != null) {
+    public ResponseEntity<User> updateById(@RequestBody User user) {
+        User userFound = repo.findById(user.getCode()).orElse(null);
+
+        if (userFound != null) {
             repo.save(user);
-            return ResponseEntity.ok(userFound);  // status 200
+            return ResponseEntity.ok(userFound); // status 200
         }
- 
+
         return ResponseEntity.notFound().build(); // status 404
-     }
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable long id) {
-        User user =  repo.findById(id).orElse(null);
+        User user = repo.findById(id).orElse(null);
 
-        if(user != null) {
+        if (user != null) {
             repo.deleteById(id);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();  
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
- 
+
         return ResponseEntity.notFound().build(); // status 404
     }
 
